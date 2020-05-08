@@ -32,6 +32,7 @@ Describing the methods for property price prediction
 -Obtain significant predictor variables in predicting prices of housing in London
 -Obtain an estimate of the spatial variation in the influence of floorspace change on price by borough. 
 
+-Geographically weighted regression (GWR) is a unique type of regression. Compared to a linear regression, the predictors contributes a coefficient value which tells how much the response is changed based on a unit change in the predicting variable. Whereas in GWR, the coefficient value changes based on spatial orientation. A coefficient value is no longer global and is calculated based on that specific region. This will decrease bias and give out a more intriguing and accurate response and analysis,
 
 ## Data Preparation
 
@@ -94,25 +95,45 @@ In the first box plot, the price of most property is under 600,000, but there is
 
 ```{r}
 ggplot(MyData, aes(x=FlorArea, y=Purprice))+ geom_point()+ geom_smooth(formula = y~x, method = loess, se = FALSE)
+```
 
+```{r}
 ggplot(MyData, aes(x=Easting, y=Purprice))+ geom_point()+ geom_smooth(formula = y~x, method = loess, se = FALSE)
+```
 
+```{r}
 ggplot(MyData, aes(x=Northing, y=Purprice))+ geom_point()+ geom_smooth(formula = y~x, method = loess, se = FALSE)
+```
 
+```{r}
 ggplot(MyData, aes(x=ProfPct, y=Purprice))+ geom_point()+ geom_smooth(formula = y~x, method = loess, se = FALSE)
+```
 
+```{r}
 ggplot(MyData, aes(x=NoCarHh, y=Purprice))+ geom_point()+ geom_smooth(formula = y~x, method = loess, se = FALSE)
+```
 
+```{r}
 ggplot(MyData, aes(x=CarspP, y=Purprice))+ geom_point()+ geom_smooth(formula = y~x, method = loess, se = FALSE)
+```
 
+```{r}
 ggplot(MyData, aes(x=UnskPct, y=Purprice))+ geom_point()+ geom_smooth(formula = y~x, method = loess, se = FALSE)
+```
 
+```{r}
 ggplot(MyData, aes(x=RetiPct, y=Purprice))+ geom_point()+ geom_smooth(formula = y~x, method = loess, se = FALSE)
+```
 
+```{r}
 ggplot(MyData, aes(x=Saleunem, y=Purprice))+ geom_point()+ geom_smooth(formula = y~x, method = loess, se = FALSE)
+```
 
+```{r}
 ggplot(MyData, aes(x=Unemploy, y=Purprice))+ geom_point()+ geom_smooth(formula = y~x, method = loess, se = FALSE)
+```
 
+```{r}
 ggplot(MyData, aes(x=PopnDnsy, y=Purprice))+ geom_point()+ geom_smooth(formula = y~x, method = loess, se = FALSE)
 ```
 
@@ -122,24 +143,34 @@ The relationship the floor area between and the price of properties are almost l
 ### Categorical Variables
 
 ```{r}
-ggplot(MyData,aes(Type, Purprice))+ geom_boxplot()
-
 ggplot(MyData,aes(CenHeat,Purprice))+ geom_boxplot()
-
+```
+We first took the approach to plot each of the categorical predictor with the response purprice. We discovered that from the CenHeat predictor, it is evident that houses with central heating are higher priced than houses without central heating. Although the average price of houses with central heating is higher, it does not differ by a large price difference. It is more comfortable when heating is provided 24/7 as to heating which needs to be set up before using which could cause discomfort in some cases. 
+```{r}
 ggplot(MyData,aes(Garage,Purprice))+ geom_boxplot()
+```
+From the number of garages, we can clearly see that the houses with two garage’s median price is a lot higher than houses with single garage. Again, the size of the house is influenced by how many cars the garage can park. By assumption, one wouldn’t have two garages with a single room. It would only be available to houses with more than two rooms to have two garages. 
 
+```{r}
 ggplot(MyData,aes(BathTwo,Purprice))+ geom_boxplot()
+```
+Furthermore, we can see that houses with two bathrooms is also higher priced on average. This difference between one bathroom to two bathrooms is much higher. Intuitively, this would be more convenient and houses with more than one washroom are typically bigger in size based on the design of the interior. 
 
+```{r}
 ggplot(MyData,aes(Bedrooms,Purprice))+ geom_boxplot()
+```
+Finally moving on to the number of bedrooms a house would have. We can see that the houses with one room and two room does not differ by much. Even three rooms doesn’t have too much difference in the median of pricing. However, as the bedroom goes to four or even five, the jump is significantly higher. 
 
+```{r}
 ggplot(MyData,aes(Age,Purprice))+ geom_boxplot()
 ```
+Moving on the to the next predictor, we have the age of the house. From our plots, we can see that housing before the World War 1 has greatest span of pricing. It is usually because the location of the housing was excellent since it was just the beginning. Therefore, it could be one of the reasons to explain the span of prices. 
 
+The type of the house also influences the pricing of housing. For example, we had detached homes, semidetached and flats. Obviously detached homes would have the highest pricing, as it has more privacy and the layout of the houses are better. Then we have the semidetached, which is still good. However, it does lack the same amount of privacy from a full detached house. Flats would be at the end of the list since there is little privacy if the isolation was not done well. 
 In the plots above, we can see that the types of property is a important factor that influence the price of a property. The property with central heating tend to be more expensive. As the number of garages, bathrooms and bedrooms goes up, the price of property shows a increase trend. However, the age of proerty seems have no influence for the price of property.
 
-（下面这段为Andy增加的，内容多，需要拆开和相应的图对应）
 Large houses clearly costs more, however as the size of the houses goes up, there are few data available. As we can see from our PurPrice vs FloorArea plot, the left size is tightly scattered with data and the right side of the line has a lot fewer data. 
-We first took the approach to plot each of the categorical predictor with the response purprice. We discovered that from the CenHeat predictor, it is evident that houses with central heating are higher priced than houses without central heating. Although the average price of houses with central heating is higher, it does not differ by a large price difference. It is more comfortable when heating is provided 24/7 as to heating which needs to be set up before using which could cause discomfort in some cases. Furthermore, we can see that houses with two bathrooms is also higher priced on average. This difference between one bathroom to two bathrooms is much higher. Intuitively, this would be more convenient and houses with more than one washroom are typically bigger in size based on the design of the interior. Moving on the to the next predictor, we have the age of the house. From our plots, we can see that housing before the World War 1 has greatest span of pricing. It is usually because the location of the housing was excellent since it was just the beginning. Therefore, it could be one of the reasons to explain the span of prices. The type of the house also influences the pricing of housing. For example, we had detached homes, semidetached and flats. Obviously detached homes would have the highest pricing, as it has more privacy and the layout of the houses are better. Then we have the semidetached, which is still good. However, it does lack the same amount of privacy from a full detached house. Flats would be at the end of the list since there is little privacy if the isolation was not done well. From the number of garages, we can clearly see that the houses with two garage’s median price is a lot higher than houses with single garage. Again, the size of the house is influenced by how many cars the garage can park. By assumption, one wouldn’t have two garages with a single room. It would only be available to houses with more than two rooms to have two garages. Finally moving on to the number of bedrooms a house would have. We can see that the houses with one room and two room does not differ by much. Even three rooms doesn’t have too much difference in the median of pricing. However, as the bedroom goes to four or even five, the jump is significantly higher. 
+
 
 
 ###
