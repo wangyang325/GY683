@@ -10,8 +10,6 @@ papersize: a4
 ---
 
 ```{r echo=FALSE}
-#setwd("E:/AcademicYear/semester2/3_CaseStudies/project/teamwork")
-setwd("C:/Users/wangy/Documents/Study/GY683/CA")
 suppressMessages(library(ggplot2))
 suppressMessages(library(maptools))
 suppressMessages(library(classInt))
