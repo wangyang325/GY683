@@ -96,11 +96,11 @@ In the first box plot, the price of most property is under 600,000, but there is
 ```{r}
 ggplot(MyData, aes(x=FlorArea, y=Purprice))+ geom_point()+ geom_smooth(formula = y~x, method = loess, se = FALSE)
 ```
-
+The floor Area and price shows a somewhat linear relationship. The slope is constant and no clear curvature is present. The price increases as floor area increases.
 ```{r}
 ggplot(MyData, aes(x=Easting, y=Purprice))+ geom_point()+ geom_smooth(formula = y~x, method = loess, se = FALSE)
 ```
-
+The location of the housing has no great effect on the price. 
 ```{r}
 ggplot(MyData, aes(x=Northing, y=Purprice))+ geom_point()+ geom_smooth(formula = y~x, method = loess, se = FALSE)
 ```
@@ -108,7 +108,7 @@ ggplot(MyData, aes(x=Northing, y=Purprice))+ geom_point()+ geom_smooth(formula =
 ```{r}
 ggplot(MyData, aes(x=ProfPct, y=Purprice))+ geom_point()+ geom_smooth(formula = y~x, method = loess, se = FALSE)
 ```
-
+Since Profpct only takes on a few values, a linear relationship is inadequate. 
 ```{r}
 ggplot(MyData, aes(x=NoCarHh, y=Purprice))+ geom_point()+ geom_smooth(formula = y~x, method = loess, se = FALSE)
 ```
@@ -136,9 +136,7 @@ ggplot(MyData, aes(x=Unemploy, y=Purprice))+ geom_point()+ geom_smooth(formula =
 ```{r}
 ggplot(MyData, aes(x=PopnDnsy, y=Purprice))+ geom_point()+ geom_smooth(formula = y~x, method = loess, se = FALSE)
 ```
-
-We can see that as the floor area increase, the price of properties go to higher.
-The relationship the floor area between and the price of properties are almost linear.
+Here, the PopnDnsy is scattered around the orgin, and most of the points are scattered tightly around the orgin.
 
 ### Categorical Variables
 
