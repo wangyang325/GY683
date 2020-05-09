@@ -2,14 +2,36 @@
 geometry: left=3.8cm,right=2.5cm,top=2.5cm,bottom=2.5cm
 header-includes: \usepackage{amsmath} \usepackage{pdflscape}
 output:
-  html_document:
-    df_print: paged
   pdf_document:
     number_sections: yes
+  html_document:
+    df_print: paged
 papersize: a4
 ---
 
+\pagenumbering{roman}     <!-- first page with Roman numbering -->
+
+\newpage                  <!-- new page -->
+
+\begin{center}          % <!-- center text -->
+
+\LARGE{NCG612 - Housing Project} % <!-- make large text -->
+
+\bigskip                % <!-- blank lines -->
+\bigskip
+
+\large{Group H (Haojun He, An Ning Shen, Yang Wang)}
+
+\end{center}    
+
+\newpage             
+
+\tableofcontents
+
+\newpage 
+
 ```{r echo=FALSE}
+options(warn=-1)
 suppressMessages(library(ggplot2))
 suppressMessages(library(maptools))
 suppressMessages(library(classInt))
@@ -22,28 +44,40 @@ suppressMessages(library(GGally))
 suppressMessages(library(car))
 ```
 
-## Main Objectives: 
+\pagenumbering{arabic} 
 
+# Introduction
+
+Housing Valuation is an area in which statistical models can play a role. The models which are frequently
+used can also be used to model other price structures.
+The project is concerned with finding the most reliable determinants on property prices. 
+The dataset is a subset of anonymised mortgage records for the area that is known as Greater London. The purchase price (which is different from the asking price) is available, as a a series of the characteristics of the property.
 The goal is to find the best group of predictors of property price and to find the most reliable determinants on property prices. 
-
 
 Describing the methods for property price prediction
 
--Obtain significant predictor variables in predicting prices of housing in London
--Obtain an estimate of the spatial variation in the influence of floorspace change on price by borough. 
+  * Obtain significant predictor variables in predicting prices of housing in London
 
--Geographically weighted regression (GWR) is a unique type of regression. Compared to a linear regression, the predictors contributes a coefficient value which tells how much the response is changed based on a unit change in the predicting variable. Whereas in GWR, the coefficient value changes based on spatial orientation. A coefficient value is no longer global and is calculated based on that specific region. This will decrease bias and give out a more intriguing and accurate response and analysis,
+  * Obtain an estimate of the spatial variation in the influence of floorspace change on price by borough. 
 
-## Data Preparation
+  * Geographically weighted regression (GWR) is a unique type of regression. Compared to a linear regression, the predictors contributes a coefficient value which tells how much the response is changed based on a unit change in the predicting variable. Whereas in GWR, the coefficient value changes based on spatial orientation. A coefficient value is no longer global and is calculated based on that specific region. This will decrease bias and give out a more intriguing and accurate response and analysis,
 
-```{r}
+# DataSet
+
+## The table below lists the names of the variables of original dataset.
+
+```{r echo=FALSE}
 LondonData <- read.csv("DataScienceProj.csv",stringsAsFactors=FALSE)
 str(LondonData)
 ```
 
-# Convert dummies to factors - more convenient for modelling
+\newpage 
 
-```{r}
+## Data Preparation
+
+Convert dummies to factors - more convenient for modelling.
+
+```{r echo=FALSE}
 Dummy2Factor <- function(mat,lev1="Level1") {
       mat <- as.matrix(mat)
       factor((mat %*% (1:ncol(mat))) + 1,
@@ -63,131 +97,203 @@ MyData$BathTwo<-as.factor(MyData$BathTwo)
 
 For building model to predict the price of property in London, some variables shoud be organized properly. 
 
-Age: these represent the time period in which the property was constructed. It is from variables BldIntWr,BldPostW,Bld60s,Bld70s and Bld80s. The values of it are PreWW1, BldIntWr, BldPostW, Bld60s, Bld70s and Bld80s.
+  * Age: these represent the time period in which the property was constructed. It is from variables BldIntWr,BldPostW,Bld60s,Bld70s and Bld80s. The values of it are PreWW1, BldIntWr, BldPostW, Bld60s, Bld70s and Bld80s.
 
-Type: these represent the type of building. It is from variables TypDetch,TypSemiD and TypFlat. The values of it are TypDetch, TypSemiD, TypFlat and Bungalow.
+  * Type: these represent the type of building. It is from variables TypDetch,TypSemiD and TypFlat. The values of it are TypDetch, TypSemiD, TypFlat and Bungalow.
 
-Garage: these represent the numbers of garage that the property has. It is from variables GarSingl and GarDoubl. The values of it are HardStnd, GarSingl and GarDoubl.
+  * Garage: these represent the numbers of garage that the property has. It is from variables GarSingl and GarDoubl. The values of it are HardStnd, GarSingl and GarDoubl.
 
-Bedrooms: these represent the numbers of bedrooms that the property has. It is from variables BedTwo,BedThree,BedFour and BedFive. The values of it are BedOne, BedTwo, BedThree, BedFour and BedFive. 
+  * Bedrooms: these represent the numbers of bedrooms that the property has. It is from variables BedTwo,BedThree,BedFour and BedFive. The values of it are BedOne, BedTwo, BedThree, BedFour and BedFive. 
 
-```{r}
+## The table below lists the names of the variables of new dataset.
+
+```{r echo=FALSE}
 str(MyData)
 ```
 
-#  Data Exploration
+\newpage 
+
+# Data Exploration
 
 ## Exploration of Dependent Variable
 
-```{r}
-ggplot(MyData, aes(y=Purprice))+ geom_boxplot()
+The Purprice variable.
 
-MyData <- MyData[MyData$Purprice < 600000,]
-
+```{r echo=FALSE}
 ggplot(MyData, aes(y=Purprice))+ geom_boxplot()
 ```
 
-In the first box plot, the price of most property is under 600,000, but there is a outlier, which is much bigger than others. It would influence the result for the reslut of analysis. So it should be moved out.
+The price of most property is under 600,000, but there is a outlier, which is much bigger than others. It would influence the result for the reslut of analysis.
 
-## Exploration of Independent Variable
+Delete the outlier which is over 600,000.
 
-### Continous Variables
+```{r echo=FALSE}
+MyData <- MyData[MyData$Purprice < 600000,]
+ggplot(MyData, aes(y=Purprice))+ geom_boxplot()
+```
 
-```{r}
+\newpage 
+
+## Exploration of Independent Variable (Continous Variables)
+
+Plot the Purprice versus FlorArea.
+
+```{r echo=FALSE}
 ggplot(MyData, aes(x=FlorArea, y=Purprice))+ geom_point()+ geom_smooth(formula = y~x, method = loess, se = FALSE)
 ```
+
 The floor Area and price shows a somewhat linear relationship. The slope is constant and no clear curvature is present. The price increases as floor area increases.
-```{r}
+
+Plot the Purprice versus Easting.
+
+```{r echo=FALSE}
 ggplot(MyData, aes(x=Easting, y=Purprice))+ geom_point()+ geom_smooth(formula = y~x, method = loess, se = FALSE)
 ```
+
 The location of the housing has no great effect on the price. 
-```{r}
+
+\newpage 
+
+Plot the Purprice versus Northing.
+
+```{r echo=FALSE}
 ggplot(MyData, aes(x=Northing, y=Purprice))+ geom_point()+ geom_smooth(formula = y~x, method = loess, se = FALSE)
 ```
 
-```{r}
+The location of the housing has no great effect on the price. 
+
+Plot the Purprice versus ProfPct.
+
+```{r echo=FALSE}
 ggplot(MyData, aes(x=ProfPct, y=Purprice))+ geom_point()+ geom_smooth(formula = y~x, method = loess, se = FALSE)
 ```
+
 Since Profpct only takes on a few values, a linear relationship is inadequate. 
-```{r}
+
+\newpage 
+
+Plot the Purprice versus NoCarHh.
+
+```{r echo=FALSE}
 ggplot(MyData, aes(x=NoCarHh, y=Purprice))+ geom_point()+ geom_smooth(formula = y~x, method = loess, se = FALSE)
 ```
 
-```{r}
+Plot the Purprice versus CarspP.
+
+```{r echo=FALSE}
 ggplot(MyData, aes(x=CarspP, y=Purprice))+ geom_point()+ geom_smooth(formula = y~x, method = loess, se = FALSE)
 ```
 
-```{r}
+\newpage 
+
+Plot the Purprice versus UnskPct.
+
+```{r echo=FALSE}
 ggplot(MyData, aes(x=UnskPct, y=Purprice))+ geom_point()+ geom_smooth(formula = y~x, method = loess, se = FALSE)
 ```
 
-```{r}
+Plot the Purprice versus RetiPct.
+
+```{r echo=FALSE}
 ggplot(MyData, aes(x=RetiPct, y=Purprice))+ geom_point()+ geom_smooth(formula = y~x, method = loess, se = FALSE)
 ```
 
-```{r}
+\newpage 
+
+Plot the Purprice versus Saleunem.
+
+```{r echo=FALSE}
 ggplot(MyData, aes(x=Saleunem, y=Purprice))+ geom_point()+ geom_smooth(formula = y~x, method = loess, se = FALSE)
 ```
 
-```{r}
+Plot the Purprice versus Unemploy.
+
+```{r echo=FALSE}
 ggplot(MyData, aes(x=Unemploy, y=Purprice))+ geom_point()+ geom_smooth(formula = y~x, method = loess, se = FALSE)
 ```
 
-```{r}
+\newpage 
+
+Plot the Purprice versus PopnDnsy.
+
+```{r echo=FALSE}
 ggplot(MyData, aes(x=PopnDnsy, y=Purprice))+ geom_point()+ geom_smooth(formula = y~x, method = loess, se = FALSE)
 ```
+
 Here, the PopnDnsy is scattered around the orgin, and most of the points are scattered tightly around the orgin.
 
-### Categorical Variables
+\newpage 
 
-```{r}
+## Exploration of Categorical Variables
+
+Plot the Purprice versus CenHeat.
+
+```{r echo=FALSE}
 ggplot(MyData,aes(CenHeat,Purprice))+ geom_boxplot()
 ```
-We first took the approach to plot each of the categorical predictor with the response purprice. We discovered that from the CenHeat predictor, it is evident that houses with central heating are higher priced than houses without central heating. Although the average price of houses with central heating is higher, it does not differ by a large price difference. It is more comfortable when heating is provided 24/7 as to heating which needs to be set up before using which could cause discomfort in some cases. 
-```{r}
+
+It show that houses with central heating are higher priced than houses without central heating. Although the average price of houses with central heating is higher, it does not differ by a large price difference. It is more comfortable when heating is provided 24/7 as to heating which needs to be set up before using which could cause discomfort in some cases. 
+
+Plot the Purprice versus Garage.
+
+```{r echo=FALSE}
 ggplot(MyData,aes(Garage,Purprice))+ geom_boxplot()
 ```
+
 From the number of garages, we can clearly see that the houses with two garage’s median price is a lot higher than houses with single garage. Again, the size of the house is influenced by how many cars the garage can park. By assumption, one wouldn’t have two garages with a single room. It would only be available to houses with more than two rooms to have two garages. 
 
-```{r}
+\newpage 
+
+Plot the Purprice versus BathTwo.
+
+```{r echo=FALSE}
 ggplot(MyData,aes(BathTwo,Purprice))+ geom_boxplot()
 ```
+
 Furthermore, we can see that houses with two bathrooms is also higher priced on average. This difference between one bathroom to two bathrooms is much higher. Intuitively, this would be more convenient and houses with more than one washroom are typically bigger in size based on the design of the interior. 
 
-```{r}
+Plot the Purprice versus Bedrooms.
+
+```{r echo=FALSE}
 ggplot(MyData,aes(Bedrooms,Purprice))+ geom_boxplot()
 ```
+
 Finally moving on to the number of bedrooms a house would have. We can see that the houses with one room and two room does not differ by much. Even three rooms doesn’t have too much difference in the median of pricing. However, as the bedroom goes to four or even five, the jump is significantly higher. 
 
-```{r}
+\newpage 
+
+Plot the Purprice versus Age.
+
+```{r echo=FALSE}
 ggplot(MyData,aes(Age,Purprice))+ geom_boxplot()
 ```
-Moving on the to the next predictor, we have the age of the house. From our plots, we can see that housing before the World War 1 has greatest span of pricing. It is usually because the location of the housing was excellent since it was just the beginning. Therefore, it could be one of the reasons to explain the span of prices. 
+
+Moving on the to the next predictor, we have the age of the house. From our plots, we can see that housing before the World War 1 has greatest span of pricing. It is usually because the location of the housing was excellent since it was just the beginning. Therefore, it could be one of the reasons to explain the span of prices.
+
+```{r echo=FALSE}
+ggplot(MyData,aes(Type,Purprice))+ geom_boxplot()
+```
 
 The type of the house also influences the pricing of housing. For example, we had detached homes, semidetached and flats. Obviously detached homes would have the highest pricing, as it has more privacy and the layout of the houses are better. Then we have the semidetached, which is still good. However, it does lack the same amount of privacy from a full detached house. Flats would be at the end of the list since there is little privacy if the isolation was not done well. 
 In the plots above, we can see that the types of property is a important factor that influence the price of a property. The property with central heating tend to be more expensive. As the number of garages, bathrooms and bedrooms goes up, the price of property shows a increase trend. However, the age of proerty seems have no influence for the price of property.
 
 Large houses clearly costs more, however as the size of the houses goes up, there are few data available. As we can see from our PurPrice vs FloorArea plot, the left size is tightly scattered with data and the right side of the line has a lot fewer data. 
 
+\newpage 
 
+# Fit Linear Mmodels 
 
-###
-
-###  - model with *lowest* AIC is closest to unknown 'true' model
-###
-
-（已下段为Andy增加）
 With all the predictors examined, we move to our simple linear regression model. We first use lm() function in R for our models. 
+
 model.9v <-lm(Purprice~FlorArea+Bedrooms+Type+BathTwo+Garage+Tenfree+CenHeat+Age+ProfPct,data=MyData)
 If we were to write out the function, it would be :
 Purprice = b0 + b1*FlorArea + b2*Bedrroms + b3*Type +…+ b9*ProfPct 
 Our predictors would be able to predict the price of a house based on given London data. It would be able to predict the price based on the coefficients of the predictors. It is only required to have the right input in order to predict the price.
 Then we want to find the predictor that has the most impact on price. So, we used AIC to compare the different predictors. In the end, we found that floor area has the most influence on price. (The AIC with the lowest value is preferred) By plotting the result of the AICs, we can see that floor area is significantly lower than all of the other predictors. We the plot the pricing of the houses with Easting on the x axis, Northing on the y axis and the color of the points distinguishing the price of the houses.
 
-
-# Fit Linear Mmodels 
 ## Fit for A Single Variable and Look at AICs
-```{r}
+
+```{r echo=FALSE}
 ## AIC
 AICs <- rep(NA,17)
 Models <- vector("list",17)
@@ -214,16 +320,22 @@ x[order(x$AIC),]
 
 In order to choose significant variables for model, we build model  for response and every predictor respectively and output the AICs of models in the table above. We can see that the area of floor is the most important predictor for predicting the price of properties. The number of bedrooms, bathrooms and the property type are also impact the property price greatly.
 
+\newpage 
+
 ## Fit Linear Model With All Predictors
-```{r}
+
+```{r echo=FALSE}
 fitAll <- lm(Purprice ~ ., data=MyData[,3:20])
 summary(fitAll)
 ```
 
 Then fit linear model with all predictors. The output of model shows the proportion of households without a car, cars per person in neighborhood, proportion of households with professional head, proportion of households with unskilled head, proportion of residents retired,unemployed workers,the new properties and local population density are not significant. This conclusion the the same as what we get in the corrolation coefficient table. So these variables are moved out from model.
 
+\newpage 
 
-```{r}
+## The model with *lowest* AIC is closest to unknown 'true' model.
+
+```{r echo=FALSE}
 fitAll_1 <- lm(Purprice ~Tenfree+CenHeat+BathTwo+FlorArea+Age+Type+Garage+Bedrooms, data=MyData)
 
 summary(fitAll_1)
@@ -233,9 +345,11 @@ VIF
 
 Buiding model with all significant predictors and check colinearity by VIF. In the table above, the colinearity of property type is very high. It shoud be moved out form model. In the next step, the dataset would be seperate into training and testing data and the linear model would be built using training dataset and be tested using testing dataset.
 
+\newpage 
+
 ## Fit model with significant predictors and test accuracy
 
-```{r}
+```{r echo=FALSE}
 set.seed(1) 
 ## data for Linear model
 lmData <- data.frame(Purprice = MyData$Purprice,
@@ -272,92 +386,60 @@ mean((preTest - testData$Purprice)^2)
 
 As the output of the model above, the mean square error of testing dataset is 777827779 which is slightly lower than that of training dataset. For predictor floor area, 1 square metre increase, the average price of property would increase 715.26 GBP, keeping other predictors constant. The average price for those properties with central hesting is higer than those without central heating by 12268.51 GBP, keeping other predictors constant.
 
+\newpage 
+
 # Spatial Variation
 
-```{r}
+## Fit model with variable Easting and Westing
+
+```{r echo=FALSE}
 x <- MyData$Easting/1000
 y <- MyData$Northing/1000
 m.tr2 <- lm(Purprice~x+y+I(x^2)+I(y^2)+I(x*y),data=MyData)
-summary(m.tr2) # lower AIC # higher price as we move west
-#stepAIC(m.tr2)
+summary(m.tr2)
 ```
 
 Fit model with variable Easting and Westing to test is the location influencing the price of properties significantly. The result shows that the properties tend to have a lower price as we move east and the infulence is significant. So it is necessary to consider the geographic effect in predicting the price of propertities. 
 
+\newpage 
+
 ## Load Borough Data
 
-```{r}
+```{r echo=FALSE}
 LB <- readOGR(dsn=".",layer="LondonBoroughs",stringsAsFactors=FALSE)  # Boroughs
 LH <- SpatialPointsDataFrame(MyData[,1:2],MyData)                     # Houses
 proj4string(LH) <- CRS(proj4string(LB))                               # copy CRS
-#plot(LB)
-#points(LH,pch=16,cex=0.5) + box()
-```
 
-## Add Brough Names to Data 
-
-```{r}
 LHLB <- over(LH,LB)   # spatial join: points first, then polygons
-#dim(LHLB)
-#head(LHLB)            # data frame has LB attributes in LH order
 MyData$Borough <- gsub(" London Boro","",LHLB$NAME)  # get the borough name
 
-#boxplot(Purprice~Borough,data=MyData)
-
-########
 Boroughs <- names(table(MyData$Borough))
 NB <- length(Boroughs)
-#boxplot(log(Purprice)~Borough,data=MyData,outpch=16,outcol="red",outcex=0.75,xaxt="n")
-#axis(1,labels=Boroughs,at=1:NB,cex.axis=0.75,las=2)
-#title("Log(Price) by Borough")
-
-#boxplot(log(Purprice)~Borough,data=MyData[MyData$Type=="TypSemiD",],outpch=16,outcol="red",outcex=0.75,xaxt="n")
-#axis(1,labels=Boroughs,at=1:NB,cex.axis=0.75,las=2)
-#title("Log(Price) by Borough (Semi Detached only")
-
-#boxplot(log(Purprice)~Borough,data=MyData[MyData$Type=="TypFlat",],outpch=16,outcol="red",outcex=0.75,xaxt="n")
-#axis(1,labels=Boroughs,at=1:NB,cex.axis=0.75,las=2)
-#title("Log(Price) by Borough (Flats only")
-########
 ```
 
+Property Price Versus Borough
 
-## Property Price Versus Borough
-
-
-```{r}
+```{r echo=FALSE}
 b.order <- rank(tapply(MyData$Purprice+runif(nrow(MyData)),MyData$Borough,median))
 
 boxplot(Purprice~Borough,data=MyData,outpch=16,outcol="red",outcex=0.75,xaxt="n",at=b.order,ylim=c(0,500000))
 axis(1,labels=Boroughs,at=b.order,cex.axis=0.75,las=2)
 title("Price by Borough")
-
-#boxplot(log(Purprice)~Borough,data=MyData,outpch=16,outcol="red",outcex=0.75,xaxt="n",at=b.order)
-#axis(1,labels=Boroughs,at=b.order,cex.axis=0.75,las=2)
-#title("Log(Price) by Borough")
 ```
 
 In the plot above, We can see the median of property price is diffrent in different borough in London. Expecially in the city of London, property price is significantly higher than that in other boroughs.
 
-#### Standardsed Residuals Versus Borough
- 
-```{r}
+```{r echo=FALSE}
 model.9v <- lm(Purprice~FlorArea+Bedrooms+BathTwo+Garage+Tenfree+CenHeat+Age,
                data=MyData)
 MyData$stdres.9v <- stdres(model.9v)
-
-#boxplot(stdres.9v~Borough,data=MyData,outpch=16,outcol="red",outcex=0.75,xaxt="n")
-#axis(1,labels=Boroughs,at=1:NB,cex.axis=0.75,las=2)
-#title("Standardised Residual by Borough")
-
-#boxplot(stdres.9v~Borough,data=MyData,outpch=16,outcol="red",outcex=0.75,xaxt="n",ylim=c(-5,5))
-#axis(1,labels=Boroughs,at=1:NB,cex.axis=0.75,las=2)
-#title("Standardised Residual by Borough")
-#abline(h=0,lty=2)
 ```
 
+\newpage 
 
-```{r}
+Standardsed Residuals Versus Borough
+
+```{r echo=FALSE}
 b.order.9v <- rank(tapply(MyData$stdres.9v+runif(nrow(MyData))*0.0001,MyData$Borough,median))
 boxplot(stdres.9v~Borough,data=MyData,outpch=16,outcol="red",outcex=0.75,xaxt="n",at=b.order.9v,ylim=c(-5,5))
 axis(1,labels=Boroughs,at=b.order.9v,cex.axis=0.75,las=2)
@@ -369,9 +451,11 @@ In the borough versus standard resudial plot, we can get the same conclusion tha
 
 First we will calibrate the bandwidth of the kernel that will be used to capture the points for each regression (this may take a little while) and then run the model:
 
-## Gwr
+\newpage 
 
-```{r}
+## Geographically weighted regression (GWR)
+
+```{r echo=FALSE}
 map = SpatialPointsDataFrame(data=trainData, coords=cbind(x=trainData$Northing, y=trainData$Easting))
 
 #bw=bw.gwr(Purprice ~ FlorArea+Bedrooms+BathTwo+Garage+Tenfree+CenHeat+Age, data=map, approach="CV",kernel="gaussian")
@@ -389,7 +473,7 @@ The output from the GWR model reveals how the coefficients vary across the 33 bo
 
 Coefficient ranges can also be seen for the other variables and they suggest some interesting spatial patterning. To explore this we can plot the GWR coefficients for different variables. Firstly we can attach the coefficients to our original dataframe - this can be achieved simply as the coefficients for each ward appear in the same order in our spatial points dataframe as they do in the original dataframe.
 
-```{r}
+```{r echo=FALSE}
 #fortify for use in ggpplot2
 boroughoutline <- fortify(LB, region="NAME")
 #save(boroughoutline, file = "boroughoutline.Rdata")
@@ -401,7 +485,9 @@ y <- trainData$Northing/1000
 ### coefFlorArea
 trainData$coefFlorArea <- gzesf.res$SDF$FlorArea
 ggplot(trainData, aes(x=x,y=y))+geom_point(aes(colour=coefFlorArea))+scale_colour_gradient2(low = "blue", mid = "white", high = "red", midpoint = (max(trainData$coefFlorArea)+ min(trainData$coefFlorArea))/2, space = "rgb", na.value = "grey50", guide = "colourbar", guide_legend(title="Coefs")) + geom_path(data=boroughoutline,aes(long/1000, lat/1000, group=id), colour="grey")+coord_equal()+ ggtitle("FlorArea") 
+```
 
+```{r echo=FALSE}
 ### coefBedrooms
 ## BedroomsBedTwo
 trainData$coefBedroomsBedTwo <- gzesf.res$SDF$BedroomsBedTwo
@@ -415,12 +501,16 @@ ggplot(trainData, aes(x=x,y=y))+geom_point(aes(colour=coefBedroomsBedFour))+scal
 ## BedroomsBedFive
 trainData$coefBedroomsBedFive <- gzesf.res$SDF$BedroomsBedFive
 ggplot(trainData, aes(x=x,y=y))+geom_point(aes(colour=coefBedroomsBedFive))+scale_colour_gradient2(low = "blue", mid = "white", high = "red", midpoint = (max(trainData$coefBedroomsBedFive)+ min(trainData$coefBedroomsBedFive))/2, space = "rgb", na.value = "grey50", guide = "colourbar", guide_legend(title="Coefs")) + geom_path(data=boroughoutline, aes(long/1000, lat/1000, group=id), colour="grey")+coord_equal() + ggtitle("BedroomsBedFive")
+```
 
+```{r echo=FALSE}
 ### coefBathTwo
 ## BathTwo
 trainData$coefBathTwo <- gzesf.res$SDF$BathTwo1
 ggplot(trainData, aes(x=x,y=y))+geom_point(aes(colour=coefBathTwo))+scale_colour_gradient2(low = "blue", mid = "white", high = "red", midpoint = (max(trainData$coefBathTwo)+ min(trainData$coefBathTwo))/2, space = "rgb", na.value = "grey50", guide = "colourbar", guide_legend(title="Coefs")) + geom_path(data=boroughoutline, aes(long/1000, lat/1000, group=id), colour="grey")+coord_equal() + ggtitle("BathTwo")
+```
 
+```{r echo=FALSE}
 ### coefGarage
 ## GarageGarSingl
 trainData$coefGarageGarSingl <- gzesf.res$SDF$GarageGarSingl
@@ -428,15 +518,21 @@ ggplot(trainData, aes(x=x,y=y))+geom_point(aes(colour=coefGarageGarSingl))+scale
 ## GarageGarDoubl
 trainData$coefGarageGarDoubl <- gzesf.res$SDF$GarageGarDoubl
 ggplot(trainData, aes(x=x,y=y))+geom_point(aes(colour=coefGarageGarDoubl))+scale_colour_gradient2(low = "blue", mid = "white", high = "red", midpoint =  (max(trainData$coefGarageGarDoubl)+ min(trainData$coefGarageGarDoubl))/2, space = "rgb", na.value = "grey50", guide = "colourbar", guide_legend(title="Coefs")) + geom_path(data=boroughoutline, aes(long/1000, lat/1000, group=id), colour="grey")+coord_equal() + ggtitle("GarDoubl")
+```
 
+```{r echo=FALSE}
 ### coefTenfree
 trainData$coefTenfree <- gzesf.res$SDF$Tenfree
 ggplot(trainData, aes(x=x,y=y))+geom_point(aes(colour=coefTenfree))+scale_colour_gradient2(low = "blue", mid = "white", high = "red", midpoint = (max(trainData$coefTenfree)+ min(trainData$coefTenfree))/2, space = "rgb", na.value = "grey50", guide = "colourbar", guide_legend(title="Coefs")) + geom_path(data=boroughoutline, aes(long/1000, lat/1000, group=id), colour="grey")+coord_equal() + ggtitle("Tenfree")
+```
 
+```{r echo=FALSE}
 ### coefCenHeat
 trainData$coefCenHeat <- gzesf.res$SDF$CenHeat1
 ggplot(trainData, aes(x=x,y=y))+geom_point(aes(colour=coefCenHeat))+scale_colour_gradient2(low = "blue", mid = "white", high = "red", midpoint = (max(trainData$coefCenHeat)+ min(trainData$coefCenHeat))/2, space = "rgb", na.value = "grey50", guide = "colourbar", guide_legend(title="Coefs")) + geom_path(data=boroughoutline, aes(long/1000, lat/1000, group=id), colour="grey")+coord_equal() + ggtitle("CenHeat")
+```
 
+```{r echo=FALSE}
 ### coefAgeBldIntWr
 ## BldIntWr
 trainData$coefAgeBldIntWr <- gzesf.res$SDF$AgeBldIntWr
@@ -453,7 +549,6 @@ ggplot(trainData, aes(x=x,y=y))+geom_point(aes(colour=coefAgeBld70s))+scale_colo
 ## Bld80s
 trainData$coefAgeBld80s <- gzesf.res$SDF$AgeBld80s
 ggplot(trainData, aes(x=x,y=y))+geom_point(aes(colour=coefAgeBld80s))+scale_colour_gradient2(low = "blue", mid = "white", high = "red", midpoint = (max(trainData$coefAgeBld80s) + min(trainData$coefAgeBld80s))/2, space = "rgb", na.value = "grey50", guide = "colourbar", guide_legend(title="Coefs")) + geom_path(data=boroughoutline, aes(long/1000, lat/1000, group=id), colour="grey")+coord_equal() + ggtitle("Bld80s")
-
 ```
 
 Taking the first plot, which is for the area of floor coefficients. We can see that
@@ -466,7 +561,5 @@ For other predictors in the model, the similar effect can also be see. They have
 
 # Conclusion
 
-In conclusion, the most reliable determinants on property prices are area of floor,the number of bedrooms, having more than two bothrooms, the number of garage, with central heating, Leasehold/Freehold indicator and the age of properties. Although,the global model with these predictors can get a good result for predicting the price of properties, it dose not consider the  spatial component. It is proved that GWR is a better way to estimate the price of property. 
-
-
+In conclusion, the most reliable determinants on property prices are area of floor,the number of bedrooms, having more than two bothrooms, the number of garage, with central heating, Leasehold/Freehold indicator and the age of properties. Although,the global model with these predictors can get a good result for predicting the price of properties, it dose not consider the  spatial component. It is proved that GWR is a better way to estimate the price of property.
 
