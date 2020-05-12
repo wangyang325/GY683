@@ -2,10 +2,10 @@
 geometry: left=3.8cm,right=2.5cm,top=2.5cm,bottom=2.5cm
 header-includes: \usepackage{amsmath} \usepackage{pdflscape}
 output:
-  pdf_document:
-    number_sections: yes
   html_document:
     df_print: paged
+  pdf_document:
+    number_sections: yes
 papersize: a4
 ---
 
@@ -46,7 +46,7 @@ papersize: a4
 
 \bigskip
 
-\large{Haojun He}
+\large{Haojun He (19250816)}
 
 \large{An Ning Shen}
 
@@ -186,13 +186,13 @@ p5 <- ggplot(MyData, aes(x=UnskPct, y=Purprice))+ geom_point()+ geom_smooth(form
 plot_grid(p2, p3, p4, p5, labels = c("A", "B", "C", "D"), ncol = 2)
 ```
 
-* A: Since Profpct only takes on a few values, a linear relationship is inadequate. 
+* A: For Profpct, only a few observations have higher values and  a linear relationship is inadequate. 
 
-* B: TODO ??????????
+* B: There are no outlier in NoCarHh, and no linear relationship between NoCarHh and Purprice.
 
-* C: TODO ??????????
+* C: The line is almost horizontal, no linear relationship between CarspP and Purprice.  
 
-* D: TODO ??????????
+* D: Most observations have lower values in UnskPct, the trend of line is influenced by outliers. The linear relationship is inadequate.
 
 \newpage 
 
@@ -204,13 +204,13 @@ p9 <- ggplot(MyData, aes(x=PopnDnsy, y=Purprice))+ geom_point()+ geom_smooth(for
 plot_grid(p6, p7, p8, p9, labels = c("E", "F", "G", "H"), ncol = 2)
 ```
 
-* E: TODO ??????????
+* E: We can see in the plot, the line is horizontal. It means there is no linear relationship between RetiPct and Purprice.
 
-* F: TODO ??????????
+* F: The trend of line in this plot is influenced by a few points. The linear relationship is inadequate.
 
-* G: TODO ??????????
+* G: The trend of line in this plot is influenced by a few points. The linear relationship between Unemploy and Purprice.
 
-* H: TODO ??????????
+* H: The plot shows the relationship between PopnDnsy and Purprice is very weak.
 
 Based on the plots above, all these variables do not have string linear relationship whith dependent variable property price. For cars per person in neighborhood and proportion of households with unskilled head, the fit line almost horizontal. It means They have no liner relationship with property price. Others variables are scattered around the orgin, and most of the points are scattered tightly around the orgin. The trand of lines are mainly infuenced by outliers. The same conclusion we can get that the relationship between them and price of property are very weak.
 
@@ -253,7 +253,7 @@ In the plots above, we can see that the types of property is a important factor 
 
 # Fit Linear Models 
 
-## Introduction of model
+## Introduction of Model
 
 With all the predictors examined, we move to our simple linear regression model. 
 We first use lm() function in R for our models. 
@@ -488,7 +488,7 @@ p7 <- ggplot(trainData, aes(x=x,y=y))+geom_point(aes(colour=coefBathTwo))+scale_
 trainData$coefTenfree <- gzesf.res$SDF$Tenfree1
 p8 <- ggplot(trainData, aes(x=x,y=y))+geom_point(aes(colour=coefTenfree))+scale_colour_gradient2(low = "blue", mid = "white", high = "red", midpoint = (max(trainData$coefTenfree)+ min(trainData$coefTenfree))/2, space = "rgb", na.value = "grey50", guide = "colourbar", guide_legend(title="Coefs")) + geom_path(data=boroughoutline, aes(long/1000, lat/1000, group=id), colour="grey")+coord_equal() + ggtitle("Tenfree")
 
-suppressWarnings(plot_grid(p1, p2, p7, p8, labels = c("A", "B", "D", "E")))
+suppressWarnings(plot_grid(p1, p2, p7, p8, labels = c("A", "B", "C", "D")))
 ```
 
 * A: Taking the first plot, which is for the area of floor coefficients. We can see that
@@ -497,9 +497,9 @@ This is a very interesting pattern, but may partly be explained the in the borou
 
 * B: The second plot is for central heating. In the west and east part of London, hasing a central heating can only influence by less than 10,000 GBP. For those boroughs in the north and south of city center, the propertity whit a center heating is much more important, the price can increase by 12,500 to 17,500 conpared with those without central heating.
 
-* C: TODO ????????????????
+* C: In this plot, we can see that the price of proporty with tow or more bathrooms is higher by at least 10,000 GBP than that with one bathroom. Furthermore, in the southwest part of London, the price gap is more significant.
 
-* D: TODO ????????????????
+* D: Around City center, the price of freehold property is lower than that of leasehold property. However, in those places far away city center, the price of freehold property is higher than that of leasehold property.
 
 \newpage 
 
@@ -589,6 +589,9 @@ suppressWarnings(plot_grid(p11, p12, p13, p14, p15, labels = c("G-1", "G-2", "G-
 For other predictors in the model, the similar effect can also be see. They have the defferent coefficients in diffreren boroughs.
 
 # Conclusion
+
+In this project, firstly, we clean the data and calculate the predictors based on the original variables.
+Secondly, analyse the relationship between every variable and target variable property price by point plots to find those variables which have strong liner relationship with  property price. Then, the linear model is built with significant variables and the variable with high colinearity is moved. Finally, GWR is used to show the infulence from spatial component.
 
 In conclusion, the most reliable determinants on property prices are area of floor,the number of bedrooms, having more than two bothrooms, the number of garage, with central heating, Leasehold/Freehold indicator and the age of properties. Although,the global model with these predictors can get a good result for predicting the price of properties, it dose not consider the  spatial component. It is proved that GWR is a better way to estimate the price of property.
 
