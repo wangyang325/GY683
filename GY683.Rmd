@@ -2,10 +2,10 @@
 geometry: left=3.8cm,right=2.5cm,top=2.5cm,bottom=2.5cm
 header-includes: \usepackage{amsmath} \usepackage{pdflscape}
 output:
-  html_document:
-    df_print: paged
   pdf_document:
     number_sections: yes
+  html_document:
+    df_print: paged
 papersize: a4
 ---
 
@@ -464,7 +464,6 @@ boroughoutline <- fortify(LB, region="NAME")
 
 x <- trainData$Easting/1000
 y <- trainData$Northing/1000
-
 ```
 
 * The diagnosis of Coefficient for FlorArea, CenHeat, Bathrooms and Tenfree:
@@ -539,12 +538,12 @@ suppressWarnings(plot_grid(p3, p4, p5, p6, labels = c("E-1", "E-2", "E-3", "E-4"
 ### coefGarage
 ## GarageGarSingl
 trainData$coefGarageGarSingl <- gzesf.res$SDF$GarageGarSingl
-p9 <- ggplot(trainData, aes(x=x,y=y))+geom_point(aes(colour=coefGarageGarSingl))+scale_colour_gradient2(low = "blue", mid = "white", high = "red", midpoint = (max(trainData$coefGarageGarSingl)+ min(trainData$coefGarageGarSingl))/2, space = "rgb", na.value = "grey50", guide = "colourbar", guide_legend(title="Coefs")) + geom_path(data=boroughoutline, aes(long/1000, lat/1000, group=id), colour="grey")+coord_equal() + ggtitle("GarSingl")
+p9 <- ggplot(trainData, aes(x=x,y=y))+geom_point(aes(colour=coefGarageGarSingl))+scale_colour_gradient2(low = "blue", mid = "white", high = "red", midpoint = (max(trainData$coefGarageGarSingl)+ min(trainData$coefGarageGarSingl))/2, space = "rgb", na.value = "grey50", guide = "colourbar", guide_legend(title="Coefs")) + geom_path(data=boroughoutline, aes(long/1000, lat/1000, group=id), colour="grey")+coord_equal() + ggtitle("GarSingle")
 ## GarageGarDoubl
 trainData$coefGarageGarDoubl <- gzesf.res$SDF$GarageGarDoubl
-p10 <- ggplot(trainData, aes(x=x,y=y))+geom_point(aes(colour=coefGarageGarDoubl))+scale_colour_gradient2(low = "blue", mid = "white", high = "red", midpoint =  (max(trainData$coefGarageGarDoubl)+ min(trainData$coefGarageGarDoubl))/2, space = "rgb", na.value = "grey50", guide = "colourbar", guide_legend(title="Coefs")) + geom_path(data=boroughoutline, aes(long/1000, lat/1000, group=id), colour="grey")+coord_equal() + ggtitle("GarDoubl")
+p10 <- ggplot(trainData, aes(x=x,y=y))+geom_point(aes(colour=coefGarageGarDoubl))+scale_colour_gradient2(low = "blue", mid = "white", high = "red", midpoint =  (max(trainData$coefGarageGarDoubl)+ min(trainData$coefGarageGarDoubl))/2, space = "rgb", na.value = "grey50", guide = "colourbar", guide_legend(title="Coefs")) + geom_path(data=boroughoutline, aes(long/1000, lat/1000, group=id), colour="grey")+coord_equal() + ggtitle("GarDouble")
 
-suppressWarnings(plot_grid(p7, p8, labels = c("F-1", "F-2"), ncol = 2))
+suppressWarnings(plot_grid(p9, p10, labels = c("F-1", "F-2"), ncol = 2))
 ```
 
 * F-1: TODO ????????????????
