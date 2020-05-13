@@ -2,10 +2,10 @@
 geometry: left=3.8cm,right=2.5cm,top=2.5cm,bottom=2.5cm
 header-includes: \usepackage{amsmath} \usepackage{pdflscape}
 output:
-  pdf_document:
-    number_sections: yes
   html_document:
     df_print: paged
+  pdf_document:
+    number_sections: yes
 papersize: a4
 ---
 
@@ -366,7 +366,7 @@ As the output of the model above, the mean square error of testing dataset is 77
 
 # Spatial Variation
 
-## Fit model with variable Easting and Northing
+## Fit Model with Variable Easting and Northing
 
 ```{r echo=FALSE}
 x <- MyData$Easting/1000
@@ -426,7 +426,7 @@ In the borough versus standard residual plot, we can get the same conclusion tha
 
 ## Geographically Weighted Regression (GWR)
 
-### The diagnosis of model
+### Fit GWR Model
 
 First we will calibrate the bandwidth of the kernel that will be used to capture the points for each regression (this may take a little while) and then run the model:
 
@@ -448,7 +448,7 @@ The output from the GWR model reveals how the coefficients vary across the 33 bo
 
 \newpage 
 
-### The diagnosis of Coefficient
+### The Interpretation of Coefficients
 
 The coefficient ranges can also be seen for the other variables and they suggest some interesting spatial patterning. To explore this we can plot the GWR coefficients for different variables. Firstly we can attach the coefficients to our original dataframe - this can be achieved simply as the coefficients for each ward appear in the same order in our spatial points dataframe as they do in the original dataframe.
 
@@ -517,15 +517,10 @@ p6 <- ggplot(trainData, aes(x=x,y=y))+geom_point(aes(colour=coefBedroomsBedFive)
 suppressWarnings(plot_grid(p3, p4, p5, p6, labels = c("E-1", "E-2", "E-3", "E-4"), ncol = 2))
 ```
 
-We can see that the different type have different effects at different areas.
 
-* E-1: Around the city center, there is the highest change of property price. far away from city center, the change of property price decline.
+Form the plots E-1, E-2 and E-3, we can see that basically, keeping house area and all other variables constant,property with more than one bedroom tends to have a lower price than that with one bedroom.
+The price gap between a property with one bedroom and more bedrooms is larger in boroughs in the southwest part of London than in other places. It should be mention that the number of properties with five bedrooms is the lowest,so the plot E-4 is slightly different from others.
 
-* E-2: In the boroughs southwest of the city center, there is the highest change of property price. In the boroughs northeast of the city center, there is the lowest change of property price.
-
-* E-3: In the boroughs north of the city center, there is the highest change of property price. In the boroughs south of the city center, there is the lowest change of property price. However, a small part of north of the city center, there is the highest change of property price. 
-
-* E-4: A small part in the boroughs east of the city center, there is the highest change of property price. From east to west the change declines gradually.
 
 \newpage 
 
@@ -543,9 +538,17 @@ p10 <- ggplot(trainData, aes(x=x,y=y))+geom_point(aes(colour=coefGarageGarDoubl)
 suppressWarnings(plot_grid(p9, p10, labels = c("F-1", "F-2"), ncol = 2))
 ```
 
-* F-1: In the boroughs east of the city center, there is the highest change of property price. In the boroughs west of the city center, there is the lowest change of property price.
+Overall, a property woth more garages is more expensive.
 
-* F-2: Around the city center, there is the highest change of property price. far away from city center, the change of property price declines.
+* F-1: Plot F-1 shows the price of properties with one garage is 
+higher than that without garage by about 4,000 GBP to 6,000 GBP in the west part of London.
+However, in the east part of London, the difference in price is larger, from around 8,000 GBP to 10,000 GBP.
+
+* F-2: IN the Plot F-2, compared with a property without garage, 
+the price of a property with two garages is approximate 10,000 GBP 
+to 25,000 GBP higher. Especially in the very south and north part 
+of London, the price is more than 25.000 GBP higher. 
+
 
 \newpage 
 
@@ -572,20 +575,13 @@ p15 <- ggplot(trainData, aes(x=x,y=y))+geom_point(aes(colour=coefAgeBld80s))+sca
 suppressWarnings(plot_grid(p11, p12, p13, p14, p15, labels = c("G-1", "G-2", "G-3", "G-4", "G-5"), ncol = 2))
 ```
 
-* G-1: In the borough's southeast of the city center, there is the highest change of property price. In the boroughs northwest of the city center, there is the lowest change of property price.
+Overall, compared with properties built before 1914, those built in-war, post-war, and 1980s tend to have a higher price. Especially in the east part of London, the price gap is much larger.However, the price of properties built in the 1960s and 1970s are lower than that built before 1914. In the east part of London, the price gap is larger.
 
-* G-2: The same trending as G-1.
-
-* G-3: In the boroughs west of the city center, there is the lowest change of property price.
-
-* G-4: In the boroughs northwest of the city center, there is the highest change of property price. In the boroughs southeast of the city center, there is the lowest change of property price.
-
-* G-5: In the boroughs southeast of the city center, there is the highest change of property price.
 
 # Conclusion
 
 In this project, firstly, we clean the data and calculate the predictors based on the original variables.
-Secondly, analyse the relationship between every variable and target variable property price by point plots to find those variables which have strong liner relationship with  property price. Then, the linear model is built with significant variables and the variable with high colinearity is moved. Finally, GWR is used to show the influence from spatial component.
+Secondly, analyze the relationship between every variable and target variable property price by point plots to find those variables which have a strong linear relationship with property price. Then, the linear model is built with significant variables, and the variable with high colinearity is moved. Finally, GWR is used to show the influence of the spatial components.
 
-In conclusion, the most reliable determinants on property prices are area of floor,the number of bedrooms, having more than two bathrooms, the number of garage, with central heating, Leasehold/Freehold indicator and the age of properties. Although,the global model with these predictors can get a good result for predicting the price of properties, it does not consider the spatial component. It is proved that GWR is a better way to estimate the price of property.
+In conclusion, the most reliable determinants on property prices are the area of a floor, the number of bedrooms, having more than two bathrooms, the number of garages, with central heating, Leasehold/Freehold indicator, and the age of properties. Although the global model with these predictors can get a good result for predicting the price of properties, it does not consider the spatial component. It is proved that GWR is a better way to estimate the price of a property.
 
