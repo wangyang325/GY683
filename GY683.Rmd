@@ -2,10 +2,10 @@
 geometry: left=3.8cm,right=2.5cm,top=2.5cm,bottom=2.5cm
 header-includes: \usepackage{amsmath} \usepackage{pdflscape}
 output:
-  html_document:
-    df_print: paged
   pdf_document:
     number_sections: yes
+  html_document:
+    df_print: paged
 papersize: a4
 ---
 
@@ -86,9 +86,9 @@ suppressMessages(library(cowplot))
 
 Housing Valuation is an area in which statistical models can play a role. The models which are frequently
 used can also be used to model other price structures.
-The project is concerned with finding the most reliable determinants on property prices. 
-The dataset is a subset of anonymised mortgage records for the area that is known as Greater London. The purchase price (which is different from the asking price) is available, as a a series of the characteristics of the property.
-The goal is to find the best group of predictors of property price and to find the most reliable determinants on property prices. 
+The project is concerned with finding the most reliable determinants of property prices. 
+The dataset is a subset of anonymized mortgage records for the area that is known as Greater London. The purchase price (which is different from the asking price) is available, as a series of characteristics of the property.
+The goal is to find the best group of predictors of property prices and to find the most reliable determinants of property prices. 
 
 Describing the methods for property price prediction
 
@@ -96,7 +96,7 @@ Describing the methods for property price prediction
 
   * Obtain an estimate of the spatial variation in the influence of floorspace change on the price by borough. 
 
-  * Geographically weighted regression (GWR) is a unique type of regression. Compared to a linear regression, the predictors contributes a coefficient value which tells how much the response is changed based on a unit change in the predicting variable. Whereas in GWR, the coefficient value changes based on spatial orientation. A coefficient value is no longer global and is calculated based on that specific region. This will decrease bias and give out a more intriguing and accurate response and analysis,
+  * Geographically weighted regression (GWR) is a unique type of regression. Compared to a linear regression, the predictors contribute a coefficient value which tells how much the response is changed based on a unit change in the predicting variable. Whereas in GWR, the coefficient value changes based on spatial orientation. A coefficient value is no longer global and is calculated based on that specific region. This will decrease bias and give out a more intriguing and accurate response and analysis,
 
 # Data Preparation
 
@@ -133,7 +133,7 @@ MyData$Tenfree<-as.factor(MyData$Tenfree)
 MyData$NewPropD<-as.factor(MyData$NewPropD)
 ```
 
-For building model to predict the price of property in London, some variables should be organized properly. 
+For building a model to predict the price of a property in London, some variables should be organized properly. 
 
   * Age: these represent the time period in which the property was constructed. It is from variables BldIntWr,BldPostW,Bld60s,Bld70s and Bld80s. The values of it are PreWW1, BldIntWr, BldPostW, Bld60s, Bld70s and Bld80s.
 
@@ -141,7 +141,7 @@ For building model to predict the price of property in London, some variables sh
 
   * Garage: these represent the numbers of garage that the property has. It is from variables GarSingl and GarDoubl. The values of it are HardStnd, GarSingl and GarDoubl.
 
-  * Bedrooms: these represent the numbers of bedrooms that the property has. It is from variables BedTwo,BedThree,BedFour and BedFive. The values of it are BedOne, BedTwo, BedThree, BedFour and BedFive. 
+  * Bedrooms: these represent the numbers of bedrooms that the property has. It is from variables BedTwo, BedThree, BedFour and BedFive. The values of it are BedOne, BedTwo, BedThree, BedFour and BedFive. 
 
 ## Variables in New Dataset.
 
@@ -163,13 +163,13 @@ plot_grid(p1, p2, labels = "AUTO")
 ```
 
 Delete the outlier which is over 600,000.
-Most of The price of property are under 600,000, but there is a outlier, which is much bigger than others. It would influence the result of the analysis.
+Most of the prices of the property are under 600,000, but there is an outlier, which is much bigger than others. It would influence the result of the analysis.
 
 ```{r echo=FALSE}
 ggplot(MyData, aes(x=FlorArea, y=Purprice))+ geom_point()+ geom_smooth(formula = y~x, method = loess, se = FALSE) + ggtitle("Purprice versus FlorArea")
 ```
 
-The floor Area and price shows a somewhat linear relationship. The slope is constant and no clear curvature is present. The price increases as floor area increases.
+The floor Area and price show a somewhat linear relationship. The slope is constant and no clear curvature is present. The price increases as the floor area increases.
 
 \newpage 
 
@@ -184,13 +184,13 @@ p5 <- ggplot(MyData, aes(x=UnskPct, y=Purprice))+ geom_point()+ geom_smooth(form
 plot_grid(p2, p3, p4, p5, labels = c("A", "B", "C", "D"), ncol = 2)
 ```
 
-* A: For Profpct, only a few observations have higher values and  a linear relationship is inadequate. 
+* A: For Profpct, only a few observations have higher values and a linear relationship is inadequate. 
 
-* B: There are no outlier in NoCarHh, and no linear relationship between NoCarHh and Purprice.
+* B: There is no outlier in NoCarHh, and no linear relationship between NoCarHh and Purprice.
 
 * C: The line is almost horizontal, no linear relationship between CarspP and Purprice.  
 
-* D: Most observations have lower values in UnskPct, the trend of line is influenced by outliers. The linear relationship is inadequate.
+* D: Most observations have lower values in UnskPct, the trend of the line is influenced by outliers. The linear relationship is inadequate.
 
 \newpage 
 
@@ -204,13 +204,14 @@ plot_grid(p6, p7, p8, p9, labels = c("E", "F", "G", "H"), ncol = 2)
 
 * E: We can see in the plot, the line is horizontal. It means there is no linear relationship between RetiPct and Purprice.
 
-* F: The trend of line in this plot is influenced by a few points. The linear relationship is inadequate.
+* F: The trend of the line in this plot is influenced by a few points. The linear relationship is inadequate.
 
-* G: The trend of line in this plot is influenced by a few points. The linear relationship between Unemploy and Purprice.
+* G: The trend of the line in this plot is influenced by a few points. The linear relationship between Unemploy and Purprice.
 
 * H: The plot shows the relationship between PopnDnsy and Purprice is very weak.
 
-Based on the plots above, all these variables do not have string linear relationship which dependent variable property price. For cars per person in neighborhood and proportion of households with unskilled head, the fit line almost horizontal. It means They have no liner relationship with property price. Others variables are scattered around the origin, and most of the points are scattered tightly around the origin. The trend of lines are mainly influenced by outliers. The same conclusion we can get that the relationship between them and price of property are very weak.
+
+Based on the plots above, all these variables do not have a strong linear relationship that dependent variable property price. For cars per person in neighborhood and proportion of households with unskilled heads, the fit line almost horizontal. It means They have no liner relationship with property price. The other variables are scattered around the origin, and most of the points are scattered tightly around the origin. The trend of lines is mainly influenced by outliers. In the same conclusion we can get that the relationship between them and the price of the property is very weak.
 
 \newpage 
 
@@ -225,13 +226,13 @@ plot_grid(p1, p2, p3, p4, labels = c("A", "B", "C", "D"), ncol = 2)
 ```
 
 
-* A: It show that houses with central heating are higher priced than houses without central heating. Although the average price of houses with central heating is higher, it does not differ by a large price difference. It is more comfortable when heating is provided 24/7 as to heating which needs to be set up before using which could cause discomfort in some cases. 
+* A: It shows that houses with central heating are higher priced than houses without central heating. Although the average price of houses with central heating is higher, it does not differ by a large price difference. It is more comfortable when heating is provided 24/7 as to heating which needs to be set up before using which could cause discomfort in some cases. 
 
-* B: From the number of garages, we can clearly see that the houses with two garage’s median price is a lot higher than houses with single garage. Again, the size of the house is influenced by how many cars the garage can park. By assumption, one wouldn’t have two garages with a single room. It would only be available to houses with more than two rooms to have two garages. 
+* B: From the number of garages, we can clearly see that the houses with two garage’s median prices are a lot higher than houses with a single garage. Again, the size of the house is influenced by how many cars the garage can park. By assumption, one wouldn’t have two garages with a single room. It would only be available to houses with more than two rooms to have two garages. 
 
-* C: Furthermore, we can see that houses with two bathrooms is also higher priced on average. This difference between one bathroom to two bathrooms is much higher. Intuitively, this would be more convenient and houses with more than one washroom are typically bigger in size based on the design of the interior. 
+* C: Furthermore, we can see that houses with two bathrooms are also higher priced on average. This difference between one bathroom to two bathrooms is much higher. Intuitively, this would be more convenient and houses with more than one washroom are typically bigger in size based on the design of the interior. 
 
-* D: Finally moving on to the number of bedrooms a house would have. We can see that the houses with one room and two rooms do not differ by much. Even three rooms doesn’t have too much difference in the median of pricing. However, as the bedroom goes to four or even five, the jump is significantly higher. 
+* D: Finally moving on to the number of bedrooms a house would have. We can see that the houses with one room and two rooms do not differ by much. Even three rooms do not have too much difference in the median of pricing. However, as the bedroom goes to four or even five, the jump is significantly higher. 
 
 \newpage 
 
@@ -241,11 +242,12 @@ p6 <- ggplot(MyData,aes(Type,Purprice))+ geom_boxplot() + ggtitle("Purprice vers
 plot_grid(p5, p6, labels = c("E", "F"), ncol = 2)
 ```
 
-* E: Moving on the to the next predictor, we have the age of the house. From our plots, we can see that housing before the World War 1 has greatest span of pricing. It is usually because the location of the housing was excellent since it was just the beginning. Therefore, it could be one of the reasons to explain the span of prices.`
+* E: Moving on to the next predictor, we have the age of the house. From our plots, we can see that housing before World War 1 has the greatest span of pricing. It is usually because the location of the housing was excellent since it was just the beginning. Therefore, it could be one of the reasons to explain the span of prices.`
 
-* F: The type of the house also influences the pricing of housing. For example, we had detached homes, semidetached and flats. Obviously detached homes would have the highest pricing, as it has more privacy and the layout of the houses are better. Then we have the semidetached, which is still good. However, it does lack the same amount of privacy from a full detached house. Flats would be at the end of the list since there is little privacy if the isolation was not done well. 
+* F: The type of the house also influences the pricing of housing. For example, we had detached homes, semidetached and flats. Obviously detached homes would have the highest pricing, as it has more privacy and the layout of the houses are better. Then we have the semidetached, which is still good. However, it does lack the same amount of privacy from a fully detached house. Flats would be at the end of the list since there is little privacy if the isolation was not done well. 
 
-In the plots above, we can see that the types of property is an important factor that influence the price of a property. The property with central heating tend to be more expensive. As the number of garages, bathrooms and bedrooms goes up, the price of property shows a increase trend. However, the age of property  seems have no influence for the price of property.Large houses clearly costs more, however as the size of the houses goes up, there are few data available. As we can see from our PurPrice vs FloorArea plot, the left size is tightly scattered with data and the right side of the line has a lot fewer data. 
+
+In the plots above, we can see that the types of property are an important factor that influences the price of a property. The property with central heating tends to be more expensive. As the number of garages, bathrooms and bedrooms goes up, the price of a property shows an increasing trend. However, the age of the property seems to have not to influence on the price of the property. The large houses clearly cost more, however as the size of the houses goes up, there are few data available. As we can see from our PurPrice vs FloorArea plot, the left size is tightly scattered with data and the right side of the line has a lot fewer data. 
 
 \newpage 
 
@@ -263,7 +265,7 @@ If we were to write out the function, it would be :
 
  * Purprice = b0 + b1*FlorArea + b2*Bedrroms + b3*Type +…+ b17*PopnDnsy
 
-Our predictors would be able to predict the price of a house based on given London data. It would be able to predict the price based on the coefficients of the predictors. It is only required to have the right input in order to predict the price.
+Our predictors would be able to predict the price of a house based on given London data. It would be able to predict the price based on the coefficients of the predictors. It is only required to have the right input to predict the price.
 
 Then we want to find the predictor that has the most impact on price. So, we used AIC to compare the different predictors. Then fit model with all predictors and choose significant predictors for the linear model. 
 
@@ -295,7 +297,8 @@ x<-data.frame(name = Vars, AIC = AICs)
 x[order(x$AIC),]
 ```
 
-In order to choose significant variables for model, we build a model for response and every predictor respectively and output the AICs of models in the table above. We can see that the area of floor is the most important predictor for predicting the price of properties. The number of bedrooms, bathrooms and the property type are also impact the property price greatly.
+
+To choose significant variables for the model, we build a model for response and every predictor respectively and output the AICs of models in the table above. We can see that the area of the floor is the most important predictor for predicting the price of properties. The number of bedrooms, bathrooms and property types are also impacted the property price greatly.
 
 \newpage 
 
@@ -306,7 +309,8 @@ fitAll <- lm(Purprice ~ ., data=MyData[,3:20])
 summary(fitAll)
 ```
 
-Then fit linear model with all predictors. The output of model shows the proportion of households without a car, cars per person in neighborhood, proportion of households with professional head, proportion of households with unskilled head, proportion of residents retired,unemployed workers,the new properties and local population density are not significant. This conclusion the the same as what we get in the correlation  coefficient table. So these variables are moved out from model.
+
+Then fit the linear model with all predictors. The output of the model shows the proportion of households without a car, cars per person in the neighborhood, the proportion of households with professional head, the proportion of households with unskilled head, the proportion of residents retired, unemployed workers, the new properties and local population density are not significant. This conclusion the same as what we get in the correlation coefficient table. So these variables are moved out of the model.
 
 \newpage 
 
@@ -320,7 +324,8 @@ VIF<-round(vif(fitAll_1)[,1],3)
 VIF
 ```
 
-Buiding model with all significant predictors and check colinearity by VIF. In the table above, the colinearity of property type is very high(9.769). It should be moved out form model. In the next step, the dataset would be separated into training and testing data and the linear model would be built using training dataset and be tested using testing dataset.
+
+Buiding model with all significant predictors and check colinearity by VIF. In the table above, the colinearity of property type is very high(9.769). It should be moved out of the model. In the next step, the dataset would be separated into training and testing data and the linear model would be built using a training dataset and be tested using a testing dataset.
 
 \newpage 
 
@@ -360,7 +365,8 @@ preTest = predict(fitTrain, testData[,2:8])
 mean((preTest - testData$Purprice)^2)
 ```
 
-As the output of the model above, the mean square error of testing dataset is 777827779 which is slightly lower than that of training dataset. For predictor floor area, 1 square metre increase, the average price of property would increase 715.26 GBP, keeping other predictors constant. The average price for those properties with central heating is higher than those without central heating by 12268.51 GBP, keeping other predictors constant.
+
+As the output of the model above, the mean square error of the testing dataset is 777827779 which is slightly lower than that of the training dataset. For predictor floor area, 1 square metre increase, the average price of the property would increase 715.26 GBP, keeping other predictors constant. The average price for those properties with central heating is higher than those without central heating by 12268.51 GBP, keeping other predictors constant.
 
 \newpage 
 
@@ -375,7 +381,8 @@ m.tr2 <- lm(Purprice~x+y+I(x^2)+I(y^2)+I(x*y),data=MyData)
 summary(m.tr2)
 ```
 
-Fit model with variable Easting and Westing to test is the location influencing the price of properties significantly. The result shows that the properties tend to have a lower price as we move east and the influence is significant. So it is necessary to consider the geographic effect in predicting the price of properties. 
+
+Fitting model with variable Easting and Westing to test is the location influencing the price of properties significantly. The result shows that the properties tend to have a lower price as we move east and the influence is significant. So it is necessary to consider the geographic effect in predicting the price of properties. 
 
 \newpage 
 
@@ -403,7 +410,7 @@ axis(1,labels=Boroughs,at=b.order,cex.axis=0.75,las=2)
 title("Property Price Versus Borough")
 ```
 
-In the plot above, We can see the median of property price is different in different borough in London. Especially in the city of London, property price is significantly higher than that in other boroughs.
+In the plot above, We can see the median property price is different in different boroughs in London. Especially in the city of London, property price is significantly higher than that in other boroughs.
 
 ```{r echo=FALSE}
 model.9v <- lm(Purprice~FlorArea+Bedrooms+BathTwo+Garage+Tenfree+CenHeat+Age,
@@ -444,7 +451,8 @@ gzesf.res<-gwr.basic(Purprice~FlorArea+Bedrooms+BathTwo+Garage+Tenfree+CenHeat+A
 gzesf.res
 ```
 
-The output from the GWR model reveals how the coefficients vary across the 33 boroughs in London. You will see how the global coefficients are exactly the same as the coefficients in the earlier linear model. In this particular model, if we take area of floor , we can see that the coefficients range from a minimum value of 612.043  GBP(1  square metre change in area of floor resulting in a increase in average price of property  of 612.043 GBP) to 821.42  GBP(1 square metre change in area of floor resulting in an increase in average price of property of 821.42 GBP). For half of the boroughs in the dataset, as floor area rises by 1 point, price of property  will increase between 676.780 GBP and 732.984 GBP(the interquartile range between the 1st Qu and the 3rd Qu).
+
+The output from the GWR model reveals how the coefficients vary across the 33 boroughs in London. You will see how the global coefficients are exactly the same as the coefficients in the earlier linear model. In this particular model, if we take the area of the floor, we can see that the coefficients range from a minimum value of 612.043 GBP(1 square metre change in the area of the floor resulting in an increase in the average price of the property of 612.043 GBP) to 821.42  GBP(1 square metre change in the area of the floor resulting in an increase in the average price of property of 821.42 GBP). For half of the boroughs in the dataset, as the floor area rises by 1 point, the price of the property will increase between 676.780 GBP and 732.984 GBP(the interquartile range between the 1st Qu and the 3rd Qu).
 
 \newpage 
 
@@ -489,11 +497,11 @@ suppressWarnings(plot_grid(p1, p2, p7, p8, labels = c("A", "B", "C", "D")))
 * A: Taking the first plot, which is for the area of floor coefficients. We can see that in the boroughs north of the city center, there is the highest change of property price corresponding to 1 square metre increase. However, in the boroughs south of the city center, the lowest change of property price corresponding to 1 square metre increase.
 This is a very interesting pattern, but may partly be explained the in the boroughs north of the city center, the buyers value the area of floor much, which makes the area of floor influencing the price of property much.
 
-* B: The second plot is for central heating. In the west and east part of London, having a central heating can only influence by less than 10,000 GBP. For those boroughs in the north and south of city center, the property with a center heating is much more important, the price can increase by 12,500 to 17,500 compared with those without central heating.
+* B: The second plot is for central heating. In the west and east part of London, having central heating can only influence by less than 10,000 GBP. For those boroughs in the north and south of the city center, the property with central heating is much more important, the price can increase by 12,500 to 17,500 compared with those without central heating.
 
-* C: In this plot, we can see that the price of property with two or more bathrooms is higher by at least 10,000 GBP than that with one bathroom. Furthermore, in the southwest part of London, the price gap is more significant.
+* C: In this plot, we can see that the price of the property with two or more bathrooms is higher by at least 10,000 GBP than that with one bathroom. Furthermore, in the southwest part of London, the price gap is more significant.
 
-* D: Around City center, the price of freehold property is lower than that of leasehold property. However, in those places far away city center, the price of freehold property is higher than that of leasehold property.
+* D: Around City center, the price of freehold property is lower than that of leasehold property. However, in those places far away from the city center, the price of freehold property is higher than that of leasehold property.
 
 \newpage 
 
@@ -517,10 +525,8 @@ p6 <- ggplot(trainData, aes(x=x,y=y))+geom_point(aes(colour=coefBedroomsBedFive)
 suppressWarnings(plot_grid(p3, p4, p5, p6, labels = c("E-1", "E-2", "E-3", "E-4"), ncol = 2))
 ```
 
-
-Form the plots E-1, E-2 and E-3, we can see that basically, keeping house area and all other variables constant,property with more than one bedroom tends to have a lower price than that with one bedroom.
-The price gap between a property with one bedroom and more bedrooms is larger in boroughs in the southwest part of London than in other places. It should be mention that the number of properties with five bedrooms is the lowest,so the plot E-4 is slightly different from others.
-
+Form the plots E-1, E-2 and E-3, we can see that basically, keeping house area and all other variables constant, the property with more than one bedroom tends to have a lower price than that with one bedroom.
+The price gap between a property with one bedroom and more bedrooms is larger in boroughs in the southwest part of London than in other places. It should be mention that the number of properties with five bedrooms is the lowest, so the plot E-4 is slightly different from others.
 
 \newpage 
 
@@ -538,7 +544,7 @@ p10 <- ggplot(trainData, aes(x=x,y=y))+geom_point(aes(colour=coefGarageGarDoubl)
 suppressWarnings(plot_grid(p9, p10, labels = c("F-1", "F-2"), ncol = 2))
 ```
 
-Overall, a property woth more garages is more expensive.
+Overall, a property with more garages is more expensive.
 
 * F-1: Plot F-1 shows the price of properties with one garage is 
 higher than that without garage by about 4,000 GBP to 6,000 GBP in the west part of London.
@@ -546,11 +552,9 @@ However, in the east part of London, the difference in price is larger, from aro
 
 * F-2: IN the Plot F-2, compared with a property without garage, 
 the price of a property with two garages is approximate 10,000 GBP 
-to 25,000 GBP higher. Especially in the very south and north part 
-of London, the price is more than 25.000 GBP higher. 
+to 25,000 GBP higher. Especially in the very south and north part of London, the price is more than 25.000 GBP higher. 
 
-
-\newpage 
+\newpage
 
 * The diagnosis of Coefficient for Age:
 
@@ -575,13 +579,14 @@ p15 <- ggplot(trainData, aes(x=x,y=y))+geom_point(aes(colour=coefAgeBld80s))+sca
 suppressWarnings(plot_grid(p11, p12, p13, p14, p15, labels = c("G-1", "G-2", "G-3", "G-4", "G-5"), ncol = 2))
 ```
 
-Overall, compared with properties built before 1914, those built in-war, post-war, and 1980s tend to have a higher price. Especially in the east part of London, the price gap is much larger.However, the price of properties built in the 1960s and 1970s are lower than that built before 1914. In the east part of London, the price gap is larger.
+Overall, compared with properties built before 1914, those built in-war, post-war, and 1980s tend to have a higher price. Especially in the east part of London, the price gap is much larger. However, the price of properties built in the 1960s and 1970s are lower than that built before 1914. In the east part of London, the price gap is larger.
 
 
 # Conclusion
 
 In this project, firstly, we clean the data and calculate the predictors based on the original variables.
 Secondly, analyze the relationship between every variable and target variable property price by point plots to find those variables which have a strong linear relationship with property price. Then, the linear model is built with significant variables, and the variable with high colinearity is moved. Finally, GWR is used to show the influence of the spatial components.
+
 
 In conclusion, the most reliable determinants on property prices are the area of a floor, the number of bedrooms, having more than two bathrooms, the number of garages, with central heating, Leasehold/Freehold indicator, and the age of properties. Although the global model with these predictors can get a good result for predicting the price of properties, it does not consider the spatial component. It is proved that GWR is a better way to estimate the price of a property.
 
