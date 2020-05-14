@@ -440,14 +440,10 @@ First we will calibrate the bandwidth of the kernel that will be used to capture
 ```{r echo=FALSE}
 map = SpatialPointsDataFrame(data=trainData, coords=cbind(x=trainData$Northing, y=trainData$Easting))
 
-#bw=bw.gwr(Purprice ~ FlorArea+Bedrooms+BathTwo+Garage+Tenfree+CenHeat+Age, data=map, approach="CV",kernel="gaussian")
-#save(bw, file = "bw.RData")
-#bw <- 6103.785
+bw=bw.gwr(Purprice ~ FlorArea+Bedrooms+BathTwo+Garage+Tenfree+CenHeat+Age, data=map, approach="CV",kernel="gaussian")
 load(file = "bw.RData")
 
 gzesf.res<-gwr.basic(Purprice~FlorArea+Bedrooms+BathTwo+Garage+Tenfree+CenHeat+Age, data=map, bw=bw, kernel='gaussian')
-#save(gzesf.res, file = "gzesf.res.Rdata")
-#load(file = "gzesf.res.Rdata")
 gzesf.res
 ```
 
@@ -470,7 +466,7 @@ x <- trainData$Easting/1000
 y <- trainData$Northing/1000
 ```
 
-* The diagnosis of Coefficient for FlorArea, CenHeat, Bathrooms and Tenfree:
+* The Interpretation of Coefficient for FlorArea, CenHeat, Bathrooms and Tenfree:
 
 ```{r echo=FALSE}
 options(warn=-1)
@@ -505,7 +501,7 @@ This is a very interesting pattern, but may partly be explained the in the borou
 
 \newpage 
 
-* The diagnosis of Coefficient for Bedrooms: 
+* The Interpretation of Coefficient for Bedrooms: 
 
 ```{r echo=FALSE}
 ### coefBedrooms
@@ -530,33 +526,28 @@ The price gap between a property with one bedroom and more bedrooms is larger in
 
 \newpage 
 
-* The diagnosis of Coefficient for Garage: 
+* The Interpretation of Coefficient for Garage: 
 
 ```{r echo=FALSE}
 ### coefGarage
 ## GarageGarSingl
 trainData$coefGarageGarSingl <- gzesf.res$SDF$GarageGarSingl
-p9 <- ggplot(trainData, aes(x=x,y=y))+geom_point(aes(colour=coefGarageGarSingl))+scale_colour_gradient2(low = "blue", mid = "white", high = "red", midpoint = (max(trainData$coefGarageGarSingl)+ min(trainData$coefGarageGarSingl))/2, space = "rgb", na.value = "grey50", guide = "colourbar", guide_legend(title="Coefs")) + geom_path(data=boroughoutline, aes(long/1000, lat/1000, group=id), colour="grey")+coord_equal() + ggtitle("GarSingle")
-## GarageGarDoubl
-trainData$coefGarageGarDoubl <- gzesf.res$SDF$GarageGarDoubl
-p10 <- ggplot(trainData, aes(x=x,y=y))+geom_point(aes(colour=coefGarageGarDoubl))+scale_colour_gradient2(low = "blue", mid = "white", high = "red", midpoint =  (max(trainData$coefGarageGarDoubl)+ min(trainData$coefGarageGarDoubl))/2, space = "rgb", na.value = "grey50", guide = "colourbar", guide_legend(title="Coefs")) + geom_path(data=boroughoutline, aes(long/1000, lat/1000, group=id), colour="grey")+coord_equal() + ggtitle("GarDouble")
-
-suppressWarnings(plot_grid(p9, p10, labels = c("F-1", "F-2"), ncol = 2))
+ggplot(trainData, aes(x=x,y=y))+geom_point(aes(colour=coefGarageGarSingl))+scale_colour_gradient2(low = "blue", mid = "white", high = "red", midpoint = (max(trainData$coefGarageGarSingl)+ min(trainData$coefGarageGarSingl))/2, space = "rgb", na.value = "grey50", guide = "colourbar", guide_legend(title="Coefs")) + geom_path(data=boroughoutline, aes(long/1000, lat/1000, group=id), colour="grey")+coord_equal() + ggtitle("GarSingle")
 ```
 
-Overall, a property with more garages is more expensive.
+* The Plot shows the prices of properties with one garage is higher than that without garage by about 4,000 GBP to 6,000 GBP in the west part of London. However, in the east part of London, the difference in price is larger, from around 8,000 GBP to 10,000 GBP.
 
-* F-1: Plot F-1 shows the price of properties with one garage is 
-higher than that without garage by about 4,000 GBP to 6,000 GBP in the west part of London.
-However, in the east part of London, the difference in price is larger, from around 8,000 GBP to 10,000 GBP.
+```{r echo=FALSE}
+## GarageGarDoubl
+trainData$coefGarageGarDoubl <- gzesf.res$SDF$GarageGarDoubl
+ggplot(trainData, aes(x=x,y=y))+geom_point(aes(colour=coefGarageGarDoubl))+scale_colour_gradient2(low = "blue", mid = "white", high = "red", midpoint =  (max(trainData$coefGarageGarDoubl)+ min(trainData$coefGarageGarDoubl))/2, space = "rgb", na.value = "grey50", guide = "colourbar", guide_legend(title="Coefs")) + geom_path(data=boroughoutline, aes(long/1000, lat/1000, group=id), colour="grey")+coord_equal() + ggtitle("GarDouble")
+```
 
-* F-2: IN the Plot F-2, compared with a property without garage, 
-the price of a property with two garages is approximate 10,000 GBP 
-to 25,000 GBP higher. Especially in the very south and north part of London, the price is more than 25.000 GBP higher. 
+* Compared properties without garage, the properties with two garages are approximate 10,000 GBP to 25,000 GBP. In the very south and north part, the prices are more than 25,000 GBP. Overall, a property with more garages is more expensive.
 
 \newpage
 
-* The diagnosis of Coefficient for Age:
+* The Interpretation of Coefficient for Age:
 
 ```{r echo=FALSE}
 ### coefAgeBldIntWr
@@ -580,7 +571,6 @@ suppressWarnings(plot_grid(p11, p12, p13, p14, p15, labels = c("G-1", "G-2", "G-
 ```
 
 Overall, compared with properties built before 1914, those built in-war, post-war, and 1980s tend to have a higher price. Especially in the east part of London, the price gap is much larger. However, the price of properties built in the 1960s and 1970s are lower than that built before 1914. In the east part of London, the price gap is larger.
-
 
 # Conclusion
 
