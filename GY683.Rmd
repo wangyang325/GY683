@@ -441,7 +441,6 @@ First we will calibrate the bandwidth of the kernel that will be used to capture
 map = SpatialPointsDataFrame(data=trainData, coords=cbind(x=trainData$Northing, y=trainData$Easting))
 
 bw=bw.gwr(Purprice ~ FlorArea+Bedrooms+BathTwo+Garage+Tenfree+CenHeat+Age, data=map, approach="CV",kernel="gaussian")
-load(file = "bw.RData")
 
 gzesf.res<-gwr.basic(Purprice~FlorArea+Bedrooms+BathTwo+Garage+Tenfree+CenHeat+Age, data=map, bw=bw, kernel='gaussian')
 gzesf.res
